@@ -1,7 +1,7 @@
 const Sequelize = require('sequelize')
 const connection = require('../database/database')
 
-const User = connection.define('users', {
+const Caterer = connection.define('caterers', {
   name: {
     type: Sequelize.STRING,
     allowNull: false
@@ -18,6 +18,6 @@ const User = connection.define('users', {
 })
 
 // RESET TABLE
-// User.sync({ force: true })
+// Caterer.sync({ force: true })
 
-module.exports = User
+module.exports = Caterer

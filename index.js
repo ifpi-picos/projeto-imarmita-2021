@@ -3,9 +3,11 @@ const app = express()
 const connection = require('./database/database')
 
 const usersController = require('./controllers/UsersController')
+const caterersController = require('./controllers/CaterersController')
+const testroutes = require('./__TestRoutes/TestRoute')
 
 
-const User = require('./modules/User')
+
 
 const PORT = 8080
 
@@ -25,7 +27,9 @@ connection
   })
 
 // ROTAS
+app.use('/TESTROUTES', testroutes)
 app.use('/users', usersController)
+app.use('/caterers', caterersController)
 
 app.get('/', (req, res) => {
   res.send('HOMEPAGE')
