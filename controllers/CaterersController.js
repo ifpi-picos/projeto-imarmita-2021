@@ -1,11 +1,11 @@
 const express = require('express')
-const User = require('../modules/User')
+const Caterer = require('../modules/Caterer')
 const { validationResult, check } = require('express-validator')
 const router = express.Router()
 
 
 router.get('/new', (req,res)=>{
-  res.send('ROTA PARA FORMULÁRIO DE NOVO USUÁRIO')
+  res.send('ROTA PARA FORMULÁRIO DE NOVO FORNECEDOR')
 })
 
 router.post(
@@ -31,13 +31,13 @@ router.post(
     const { name, email, password } = req.body
 
     try {
-      const emailExists = await User.findAll({
+      const emailExists = await Caterer.findAll({
         where: { email }
       })
       if (emailExists.length) {
         return res.status(400).json({ msg: 'Email já utilizado.' })
       }
-      await User.create({
+      await Caterer.create({
         name: name.toUpperCase(),
         email,
         password
