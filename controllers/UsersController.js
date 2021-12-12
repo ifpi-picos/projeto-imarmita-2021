@@ -1,6 +1,6 @@
-const express = require('express')
-const User = require('../modules/User')
-const { validationResult, check } = require('express-validator')
+import express from 'express'
+import { validationResult, check } from 'express-validator'
+import User from '../modules/User.js'
 const router = express.Router()
 
 
@@ -51,4 +51,4 @@ router.post(
   }
 )
 
-module.exports = router
+export default router

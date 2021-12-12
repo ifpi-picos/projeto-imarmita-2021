@@ -1,5 +1,5 @@
-const Sequelize = require('sequelize')
-const connection = require('../database/database')
+import Sequelize from 'sequelize'
+import connection from '../database/database.js'
 
 const User = connection.define('users', {
   name: {
@@ -20,4 +20,4 @@ const User = connection.define('users', {
 // RESET TABLE
 // User.sync({ force: true })
 
-module.exports = User
+export default User

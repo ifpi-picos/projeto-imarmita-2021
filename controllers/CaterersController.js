@@ -1,8 +1,8 @@
-const express = require('express')
-const Caterer = require('../modules/Caterer')
-const { validationResult, check } = require('express-validator')
-const router = express.Router()
+import express from 'express'
+import { validationResult, check } from 'express-validator'
+import Caterer from '../modules/Caterer.js'
 
+const router = express.Router()
 
 router.get('/new', (req,res)=>{
   res.send('ROTA PARA FORMULÁRIO DE NOVO FORNECEDOR')
@@ -51,4 +51,4 @@ router.post(
   }
 )
 
-module.exports = router
+export default router

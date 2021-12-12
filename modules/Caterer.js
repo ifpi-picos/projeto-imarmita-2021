@@ -1,5 +1,5 @@
-const Sequelize = require('sequelize')
-const connection = require('../database/database')
+import Sequelize from 'sequelize'
+import connection from '../database/database.js'
 
 const Caterer = connection.define('caterers', {
   name: {
@@ -20,4 +20,4 @@ const Caterer = connection.define('caterers', {
 // RESET TABLE
 // Caterer.sync({ force: true })
 
-module.exports = Caterer
+export default Caterer
