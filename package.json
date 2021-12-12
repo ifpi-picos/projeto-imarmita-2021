@@ -2,10 +2,11 @@
   "name": "imarmita",
   "version": "1.0.0",
   "description": "Aplicação para venda de marmitas online",
-  "main": "app.js",
+  "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon app.js"
+    "dev": "npx nodemon src/server.js",
+    "migrate": "npx sequelize db:migrate"
   },
   "author": "Daniella Marques, João Araújo, Raquel Cadete",
   "license": "ISC",
@@ -16,5 +17,7 @@
     "pg-hstore": "^2.3.4",
     "sequelize": "^6.12.0-beta.1"
   },
-  "type": "module"
+  "devDependencies": {
+    "sequelize-cli": "^6.3.0"
+  }
 }

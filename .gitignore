@@ -3,3 +3,10 @@ node_modules/
 
 # Test Routes
 __TestRoutes/
+
+# Logs
+logs
+*.log
+
+# Development Host Info
+src/config/database.js
