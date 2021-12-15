@@ -1,12 +1,10 @@
 # Dependency directories
 node_modules/
 
-# Test Routes
-__TestRoutes/
-
 # Logs
 logs
 *.log
 
-# Development Host Info
-src/config/database.js
+# Development and Test Environment Variables
+.env
+.env.test

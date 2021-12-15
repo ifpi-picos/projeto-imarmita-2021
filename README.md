@@ -7,8 +7,8 @@ A aplicação tem como objetivo principal oferecer um serviço de plataforma par
 
 ## Setup
 
-Antes de rodar o projeto, remova a extensão .example do arquivo database.js.example no diretório src/config , tornando-o apenas database.js.
-Edite suas variáveis em "development" de acordo com as variáveis de seu ambiente local.
+Antes de rodar o projeto, faça uma cópia do arquivo .env.example e o renomeie para apenas .env
+Edite as variáveis desse arquivo de acordo com as variáveis de seu ambiente local.
 
 
 ### Rodando o Projeto
@@ -20,6 +20,12 @@ $ npm install
 
 # running migrations
 $ npm run migrate
+
+# running all seeds
+$ npm run seeds
+
+# reversing all seeds
+$ npm run undo-seeds
 
 # running server in dev mode
 $ npm run dev
