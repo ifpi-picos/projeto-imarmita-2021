@@ -1,2 +1,10 @@
 # Dependency directories
 node_modules/
+
+# Logs
+logs
+*.log
+
+# Development and Test Environment Variables
+.env
+.env.test
