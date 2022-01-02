@@ -1,6 +1,5 @@
 const express = require('express')
 const { validationResult, param, check } = require('express-validator')
-const res = require('express/lib/response')
 
 const { Users } = require('../models')
 const UsersService = require('../services/users')
