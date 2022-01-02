@@ -6,8 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "npx nodemon src/server.js",
-    "migrate": "npx sequelize db:migrate",
-    "undo-seeds":"npx sequelize-cli db:seed:undo:all",
+    "migrate": "npx sequelize-cli db:migrate",
+    "undo-seeds": "npx sequelize-cli db:seed:undo:all",
     "seeds": "npx sequelize-cli db:seed:all"
   },
   "author": "Daniella Marques, João Araújo, Raquel Cadete",
