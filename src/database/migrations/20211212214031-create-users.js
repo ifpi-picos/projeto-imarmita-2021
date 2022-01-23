@@ -8,27 +8,31 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      phone: {
-        allowNull: false,
-        unique: true,
-        type: Sequelize.STRING
-      },
       name: {
         allowNull: false,
         type: Sequelize.STRING
-      },
-      birthDate: {
-        allowNull: false,
-        type: Sequelize.DATEONLY
       },
       email: {
         allowNull: false,
         unique: true,
         type: Sequelize.STRING
       },
+      phone: {
+        allowNull: false,
+        unique: true,
+        type: Sequelize.STRING
+      },
+      bioDescription: {
+        allowNull: true,
+        type: Sequelize.STRING
+      },
       password: {
         allowNull: false,
         type: Sequelize.STRING
+      },
+      profileType: {
+        allowNull: false,
+        type: Sequelize.INTEGER
       },
       createdAt: {
         allowNull: false,
@@ -36,6 +40,10 @@ module.exports = {
       },
       updatedAt: {
         allowNull: false,
+        type: Sequelize.DATE
+      },
+      deletedAt: {
+        allowNull: true,
         type: Sequelize.DATE
       }
     })

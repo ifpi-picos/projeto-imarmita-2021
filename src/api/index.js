@@ -14,5 +14,4 @@ router.get('/', (req, res) => {
 // ROTAS INDEXADAS
 router.use('/users', userRoutes)
 
-
 module.exports = router
