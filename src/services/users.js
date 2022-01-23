@@ -1,14 +1,33 @@
 const { Op } = require('sequelize/dist')
+const bcrypt = require('bcrypt')
 
+const SALT = 10
 class UsersService {
   constructor (User) {
     this.User = User
   }
 
-  async get () {
+  async getCustomers () {
     try {
       const { rows, count } = await this.User.findAndCountAll({
-        attributes: ['id', 'name', 'phone', 'email']
+        where: {
+          profileType: 2
+        },
+        attributes: ['id', 'name', 'email', 'phone']
+      })
+      return { users: rows, count }
+    } catch (error) {
+      throw new Error(error)
+    }
+  }
+
+  async getCompanies () {
+    try {
+      const { rows, count } = await this.User.findAndCountAll({
+        where: {
+          profileType: 1
+        },
+        attributes: ['id', 'name', 'email', 'phone', 'bioDescription']
       })
       return { users: rows, count }
     } catch (error) {
@@ -18,6 +37,7 @@ class UsersService {
 
   async create (UserDTO) {
     try {
+      UserDTO.password = bcrypt.hashSync(UserDTO.password, SALT)
       const [user, created] = await this.User.findOrCreate({
         where: {
           [Op.or]: [{ phone: UserDTO.phone }, { email: UserDTO.email }]
@@ -25,48 +45,68 @@ class UsersService {
         defaults: UserDTO
       })
       if (created) {
-        return user
+        const createdUser = {
+          id: user.id,
+          name: user.name,
+          email: user.email,
+          phone: user.phone,
+          profileType: user.profileType,
+          bioDescription: user.bioDescription
+        }
+
+        return { message: 'Usuário cadastrado com sucesso', data: createdUser }
       } else {
         throw new Error('Usuário já cadastrado')
       }
-    } catch (error) {
-      throw new Error(error.message)
+    } catch ({ message }) {
+      throw new Error(message)
     }
   }
+
   async update (id, UserDTO) {
     try {
+      // CHECKS IF USER EXISTS
+      const user = await this.User.findByPk(id)
+      if (!user) {
+        throw new Error('Usuário não existe! Informe um ID de usuário válido')
+      }
+
+      // SETS FIELDS TO UPDATE ACCORDING TO 'PROFILE TYPE' & AVOIDS EMPTY DESCRIPTION FOR COMPANY USERS
+      const fields = ['name', 'email', 'phone', 'password']
+
+      if (user.profileType === 1) {
+        fields.push('bioDescription')
+
+        if (UserDTO.bioDescription == null || UserDTO.bioDescription == '') {
+          throw new Error('Insira uma descrição para sua empresa.')
+        }
+      }
+
+      // VERIFY IF UNIQUE DATA IS REPEATED
       const verifyUser = await this.User.findAll({
         where: {
           [Op.or]: [{ phone: UserDTO.phone }, { email: UserDTO.email }]
         }
       })
 
-      if (verifyUser[0]) {
+      if (verifyUser[0] && verifyUser[0].id != id) {
         throw new Error('Email e/ou telefone já cadastrados!')
       }
 
+      // HASHES PASSWORD
+      UserDTO.password = bcrypt.hashSync(UserDTO.password, SALT)
 
-      const verifyPassword = await this.User.findByPk(id, {
-        attributes: ['password']
+      // UPDATES USER
+      await this.User.update(UserDTO, {
+        where: { id },
+        fields
       })
 
-      if (UserDTO.password === verifyPassword.password) {
-        throw new Error('Senha não atualizada')
-      }
-
-      const Response = await this.User.update(UserDTO, {
-        where: { id }
+      const updatedUser = await this.User.findByPk(id, {
+        attributes: ['id', 'name', 'email', 'phone', 'bioDescription']
       })
 
-      if (!Response[0]) {
-        throw new Error('Usuário não existe! Informe um ID de usuário válido')
-      }
-
-      const user = await this.User.findByPk(id, {
-        attributes: ['id', 'phone', 'name', 'birthDate', 'email']
-      })
-
-      return { message: 'Usuário atualizado com sucesso', data: user }
+      return { message: 'Usuário atualizado com sucesso', data: updatedUser }
     } catch (error) {
       throw new Error(error.message)
     }
@@ -80,7 +120,6 @@ class UsersService {
         throw new Error('Usuário não existe!')
       }
       return { message: 'Usuário apagado com sucesso!' }
-
     } catch (error) {
       throw new Error(error.message)
     }

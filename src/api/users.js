@@ -1,5 +1,5 @@
 const express = require('express')
-const { validationResult, param, check } = require('express-validator')
+const { validationResult, param, body, check } = require('express-validator')
 
 const { Users } = require('../models')
 const UsersService = require('../services/users')
@@ -11,10 +11,19 @@ router.get('/new', (req, res) => {
   res.send('ROUTE FOR NEW USER FORM')
 })
 
-router.get('/', async (req, res) => {
+router.get('/customers', async (req, res) => {
   try {
-    const { users, count } = await usersService.get()
-    res.json({ message: `${count} usuários encontrados!`, data: users })
+    const { users, count } = await usersService.getCustomers()
+    res.json({ message: `${count} clientes encontrados!`, data: users })
+  } catch ({ msg }) {
+    res.status(400).json({ error: { msg } })
+  }
+})
+
+router.get('/companies', async (req, res) => {
+  try {
+    const { users, count } = await usersService.getCompanies()
+    res.json({ message: `${count} fornecedores encontrados!`, data: users })
   } catch ({ msg }) {
     res.status(400).json({ error: { msg } })
   }
@@ -22,26 +31,36 @@ router.get('/', async (req, res) => {
 
 router.post(
   '/',
-  check('phone', 'Telefone inválido')
+  body('name', 'Nome inválido!')
+    .trim()
+    .notEmpty()
+    .isAlpha('pt-BR', { ignore: ' ' }),
+  body('email', 'Email inválido!')
+    .trim()
+    .notEmpty()
+    .isEmail(),
+  body('phone', 'Telefone inválido')
     .trim()
     .notEmpty()
     .isNumeric()
     .isMobilePhone('pt-BR'),
-  check('name', 'Nome inválido!')
-    .trim()
+  body('profileType', 'profileType inválido!')
+    .isInt()
+    .isIn([1, 2]),
+  body(
+    'bioDescription',
+    'Adicione a descrição para a empresa, incluindo horário de funcionamento'
+  )
+    .if(
+      body('profileType').custom((value, { req }) => {
+        if (req.body.profileType == 1) {
+          return true
+        }
+      })
+    )
     .notEmpty()
-    .isAlpha('pt-BR', { ignore: ' ' }),
-  check('birthDate', 'Data inválida')
-    .trim()
-    .notEmpty()
-    .isISO8601()
-    .withMessage('Formato de data inválido! [YYYY-MM-DD]')
-    .isBefore(),
-  check('email', 'Email inválido!')
-    .trim()
-    .notEmpty()
-    .isEmail(),
-  check('password', 'Senha deve conter pelo menos 8 caracteres.')
+    .isLength({ max: 150 }),
+  body('password', 'Senha deve conter pelo menos 8 caracteres.')
     .trim()
     .notEmpty()
     .isLength({ min: 8 }),
@@ -54,13 +73,21 @@ router.post(
         return res.status(400).json({ errors: errors.array()[0].msg })
       }
 
-      const { phone, name, birthDate, email, password } = req.body
-      const user = await usersService.create({
-        phone,
+      const {
         name,
-        birthDate,
         email,
-        password
+        phone,
+        bioDescription,
+        password,
+        profileType
+      } = req.body
+      const user = await usersService.create({
+        name,
+        email,
+        phone,
+        bioDescription,
+        password,
+        profileType
       })
       res
         .status(201)
@@ -73,26 +100,21 @@ router.post(
 
 router.put(
   '/:id',
-  check('phone', 'Telefone inválido')
+  param('id', 'Informe um ID válido').isInt({ min: 1 }),
+  body('name', 'Nome inválido!')
+    .trim()
+    .notEmpty()
+    .isAlpha('pt-BR', { ignore: ' ' }),
+  body('email', 'Email inválido!')
+    .trim()
+    .notEmpty()
+    .isEmail(),
+  body('phone', 'Telefone inválido')
     .trim()
     .notEmpty()
     .isNumeric()
     .isMobilePhone('pt-BR'),
-  check('name', 'Nome inválido!')
-    .trim()
-    .notEmpty()
-    .isAlpha('pt-BR', { ignore: ' ' }),
-  check('birthDate', 'Data inválida')
-    .trim()
-    .notEmpty()
-    .isISO8601()
-    .withMessage('Formato de data inválido! [YYYY-MM-DD]')
-    .isBefore(),
-  check('email', 'Email inválido!')
-    .trim()
-    .notEmpty()
-    .isEmail(),
-  check('password', 'Senha deve conter pelo menos 8 caracteres.')
+  body('password', 'Senha deve conter pelo menos 8 caracteres.')
     .trim()
     .notEmpty()
     .isLength({ min: 8 }),
@@ -106,13 +128,13 @@ router.put(
       }
 
       const { id } = req.params
-      const { phone, name, birthDate, email, password } = req.body
+      const { name, email, phone, bioDescription, password } = req.body
 
       const user = await usersService.update(id, {
-        phone,
         name,
-        birthDate,
         email,
+        phone,
+        bioDescription,
         password
       })
       res.status(200).json(user)
@@ -124,7 +146,7 @@ router.put(
 
 router.delete(
   '/:id',
-  param('id', 'informe um ID valido').isInt({ min: 1 }),
+  param('id', 'Informe um ID válido').isInt({ min: 1 }),
 
   async (req, res) => {
     try {
