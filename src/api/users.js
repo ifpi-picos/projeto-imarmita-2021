@@ -15,8 +15,8 @@ router.get('/customers', async (req, res) => {
   try {
     const { users, count } = await usersService.getCustomers()
     res.json({ message: `${count} clientes encontrados!`, data: users })
-  } catch ({ msg }) {
-    res.status(400).json({ error: { msg } })
+  } catch ({ message }) {
+    res.status(400).json({ error: { message } })
   }
 })
 
@@ -24,8 +24,8 @@ router.get('/companies', async (req, res) => {
   try {
     const { users, count } = await usersService.getCompanies()
     res.json({ message: `${count} fornecedores encontrados!`, data: users })
-  } catch ({ msg }) {
-    res.status(400).json({ error: { msg } })
+  } catch ({ message }) {
+    res.status(400).json({ error: { message } })
   }
 })
 
@@ -70,7 +70,7 @@ router.post(
       const errors = validationResult(req)
 
       if (!errors.isEmpty()) {
-        return res.status(400).json({ errors: errors.array()[0].msg })
+        return res.status(400).json({ error: errors.array()[0].msg })
       }
 
       const {
@@ -124,7 +124,7 @@ router.put(
       const errors = validationResult(req)
 
       if (!errors.isEmpty()) {
-        return res.status(400).json({ error: errors.array()[0] })
+        return res.status(400).json({ error: errors.array()[0].msg })
       }
 
       const { id } = req.params
@@ -153,7 +153,7 @@ router.delete(
       const errors = validationResult(req)
 
       if (!errors.isEmpty()) {
-        return res.status(400).json({ error: errors.array()[0] })
+        return res.status(400).json({ error: errors.array()[0].msg })
       }
       const { id } = req.params
 

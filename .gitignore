@@ -8,3 +8,6 @@ logs
 # Development and Test Environment Variables
 .env
 .env.test
+
+
+coverage/
