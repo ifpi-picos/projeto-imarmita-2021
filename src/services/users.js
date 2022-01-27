@@ -77,7 +77,7 @@ class UsersService {
       if (user.profileType === 1) {
         fields.push('bioDescription')
 
-        if (UserDTO.bioDescription == null || UserDTO.bioDescription == '') {
+        if (!UserDTO.bioDescription) {
           throw new Error('Insira uma descrição para sua empresa.')
         }
       }
