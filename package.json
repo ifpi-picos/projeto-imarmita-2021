@@ -10,16 +10,17 @@
     "undo-seeds": "npx sequelize-cli db:seed:undo:all",
     "seeds": "npx sequelize-cli db:seed:all"
   },
-  "author": "Daniella Marques, João Araújo, Raquel Cadete",
+  "author": "Daniella Marques, João Araújo",
   "license": "ISC",
   "dependencies": {
     "bcrypt": "^5.0.1",
     "dotenv": "^10.0.0",
     "express": "^4.17.1",
     "express-validator": "^6.13.0",
+    "jsonwebtoken": "^8.5.1",
     "pg": "^8.7.1",
     "pg-hstore": "^2.3.4",
-    "sequelize": "^6.12.0-beta.1"
+    "sequelize": "^6.15.0"
   },
   "devDependencies": {
     "jest": "^27.4.7",

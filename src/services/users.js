@@ -1,4 +1,4 @@
-const { Op } = require('sequelize/dist')
+const { Op } = require('sequelize')
 const bcrypt = require('bcrypt')
 
 const SALT = 10
@@ -35,35 +35,35 @@ class UsersService {
     }
   }
 
-  async create (UserDTO) {
-    try {
-      UserDTO.password = bcrypt.hashSync(UserDTO.password, SALT)
-      const [user, created] = await this.User.findOrCreate({
-        where: {
-          [Op.or]: [{ phone: UserDTO.phone }, { email: UserDTO.email }]
-        },
-        defaults: UserDTO
-      })
-      if (created) {
-        const createdUser = {
-          id: user.id,
-          name: user.name,
-          email: user.email,
-          phone: user.phone,
-          profileType: user.profileType,
-          bioDescription: user.bioDescription
-        }
+  // async create (userDTO) {
+  //   try {
+  //     userDTO.password = bcrypt.hashSync(userDTO.password, SALT)
+  //     const [user, created] = await this.User.findOrCreate({
+  //       where: {
+  //         [Op.or]: [{ phone: userDTO.phone }, { email: userDTO.email }]
+  //       },
+  //       defaults: userDTO
+  //     })
+  //     if (created) {
+  //       const createdUser = {
+  //         id: user.id,
+  //         name: user.name,
+  //         email: user.email,
+  //         phone: user.phone,
+  //         profileType: user.profileType,
+  //         bioDescription: user.bioDescription
+  //       }
 
-        return { message: 'Usuário cadastrado com sucesso', data: createdUser }
-      } else {
-        throw new Error('Usuário já cadastrado')
-      }
-    } catch ({ message }) {
-      throw new Error(message)
-    }
-  }
+  //       return { message: 'Usuário cadastrado com sucesso', data: createdUser }
+  //     } else {
+  //       throw new Error('Usuário já cadastrado')
+  //     }
+  //   } catch ({ message }) {
+  //     throw new Error(message)
+  //   }
+  // }
 
-  async update (id, UserDTO) {
+  async update (id, userDTO) {
     try {
       // CHECKS IF USER EXISTS
       const user = await this.User.findByPk(id)
@@ -77,7 +77,7 @@ class UsersService {
       if (user.profileType === 1) {
         fields.push('bioDescription')
 
-        if (!UserDTO.bioDescription) {
+        if (!userDTO.bioDescription) {
           throw new Error('Insira uma descrição para sua empresa.')
         }
       }
@@ -85,7 +85,7 @@ class UsersService {
       // VERIFY IF UNIQUE DATA IS REPEATED
       const verifyUser = await this.User.findAll({
         where: {
-          [Op.or]: [{ phone: UserDTO.phone }, { email: UserDTO.email }]
+          [Op.or]: [{ phone: userDTO.phone }, { email: userDTO.email }]
         }
       })
 
@@ -94,10 +94,10 @@ class UsersService {
       }
 
       // HASHES PASSWORD
-      UserDTO.password = bcrypt.hashSync(UserDTO.password, SALT)
+      userDTO.password = bcrypt.hashSync(userDTO.password, SALT)
 
       // UPDATES USER
-      await this.User.update(UserDTO, {
+      await this.User.update(userDTO, {
         where: { id },
         fields
       })
