@@ -35,34 +35,6 @@ class UsersService {
     }
   }
 
-  // async create (userDTO) {
-  //   try {
-  //     userDTO.password = bcrypt.hashSync(userDTO.password, SALT)
-  //     const [user, created] = await this.User.findOrCreate({
-  //       where: {
-  //         [Op.or]: [{ phone: userDTO.phone }, { email: userDTO.email }]
-  //       },
-  //       defaults: userDTO
-  //     })
-  //     if (created) {
-  //       const createdUser = {
-  //         id: user.id,
-  //         name: user.name,
-  //         email: user.email,
-  //         phone: user.phone,
-  //         profileType: user.profileType,
-  //         bioDescription: user.bioDescription
-  //       }
-
-  //       return { message: 'Usuário cadastrado com sucesso', data: createdUser }
-  //     } else {
-  //       throw new Error('Usuário já cadastrado')
-  //     }
-  //   } catch ({ message }) {
-  //     throw new Error(message)
-  //   }
-  // }
-
   async update (id, userDTO) {
     try {
       // CHECKS IF USER EXISTS
