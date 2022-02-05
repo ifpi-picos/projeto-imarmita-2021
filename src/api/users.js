@@ -7,25 +7,24 @@ const usersService = new UsersService(Users)
 
 const router = express.Router()
 
-router.get('/new', (req, res) => {
-  res.send('ROUTE FOR NEW USER FORM')
-})
-
-router.get('/customers', async (req, res) => {
+router.get('/', async (req, res) => {
   try {
-    const { users, count } = await usersService.getCustomers()
-    res.json({ message: `${count} clientes encontrados!`, data: users })
+    const filter = req.body.profileType
+    const { users, count } = await usersService.getAllUsers(req.userId, filter)
+    res.json({ message: `${count} usuários encontrados!`, data: users })
   } catch ({ message }) {
-    res.status(400).json({ error: { message } })
+    res.status(401).json({ error: { message } })
   }
 })
 
+
+
 router.get('/companies', async (req, res) => {
   try {
-    const { users, count } = await usersService.getCompanies()
+    const { users, count } = await usersService.getCompanies(req.userId)
     res.json({ message: `${count} fornecedores encontrados!`, data: users })
   } catch ({ message }) {
-    res.status(400).json({ error: { message } })
+    res.status(401).json({ error: { message } })
   }
 })
 
@@ -59,9 +58,9 @@ router.put(
       }
 
       const { id } = req.params
+      const actorId = req.userId
       const { name, email, phone, bioDescription, password } = req.body
-
-      const user = await usersService.update(id, {
+      const user = await usersService.update(id, actorId, {
         name,
         email,
         phone,
@@ -87,8 +86,9 @@ router.delete(
         return res.status(400).json({ error: errors.array()[0].msg })
       }
       const { id } = req.params
+      const actorId = req.userId
 
-      const user = await usersService.delete(id)
+      const user = await usersService.delete(id, actorId)
       res.status(200).json(user)
     } catch ({ message }) {
       res.status(400).json({ error: { message } })
