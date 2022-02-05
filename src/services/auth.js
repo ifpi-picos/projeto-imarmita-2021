@@ -34,8 +34,8 @@ class Auth {
     }
 
     const token = this.genToken(user)
-    const { name } = user
-    return { token, userData: { name, email } }
+    const { id, name } = user
+    return { token, userData: { id, name, email } }
   }
 
   async signUp (userDTO) {
@@ -57,7 +57,7 @@ class Auth {
           bioDescription: user.bioDescription
         }
 
-        return { message: 'Usuário cadastrado com sucesso', data: createdUser }
+        return createdUser
       } else {
         throw new Error('Usuário já cadastrado')
       }
