@@ -13,32 +13,18 @@ class UsersService {
     this.order = [['name', 'ASC']]
   }
 
-  async getUserById (userId) {
-    try {
-      const user = await this.User.findByPk(userId)
-      return user
-    } catch (error) {
-      throw new Error(error)
-    }
-  }
-
   async getAllUsers (actorId, filter) {
     try {
-      const actor = await this.getUserById(actorId)
-      if (actor.profileType !== ADMIN_USER) {
-        throw new Error('Usuário não autorizado!')
-      }
+      await this.checkPermission(actorId, ADMIN_USER)
 
       const attributes = ['id', 'name', 'email', 'phone', 'profileType']
-      if (filter === COMPANY_USER) {
+      if ((filter === COMPANY_USER) | (filter === 0)) {
         attributes.push('bioDescription')
       }
-
       const condition = {
         attributes,
         order: this.order
       }
-
       if (filter !== 0) {
         condition.where = { profileType: filter }
       }
@@ -52,10 +38,7 @@ class UsersService {
 
   async getCompanies (actorId) {
     try {
-      const actor = await this.getUserById(actorId)
-      if (actor.profileType !== CUSTOMER_USER) {
-        throw new Error('Usuário não autorizado!')
-      }
+      await this.checkPermission(actorId, CUSTOMER_USER)
       const { rows, count } = await this.User.findAndCountAll({
         where: {
           profileType: COMPANY_USER
@@ -71,32 +54,21 @@ class UsersService {
 
   async update (id, actorId, userDTO) {
     try {
-      // CHECKS IF USER EXISTS
-      const userToUpdate = await this.User.findByPk(id)
-      if (!userToUpdate) {
-        throw new Error('Usuário não existe! Informe um ID de usuário válido')
-      }
+      const userToUpdate = await this.userExists(id)
 
-      const actor = await this.getUserById(actorId)
-      if (actor.id !== userToUpdate.id) {
+      // CHECK PERMISSIONS
+      const actor = await this.User.findByPk(actorId)
+      if (actor.id != id) {
         throw new Error('Usuário não autorizado!')
       }
 
       // VERIFY IF UNIQUE DATA IS REPEATED
-      const verifyUser = await this.User.findOne({
-        where: {
-          [Op.or]: [{ phone: userDTO.phone }, { email: userDTO.email }]
-        }
-      })
-
-      if (verifyUser && verifyUser.id != id) {
-        throw new Error('Email e/ou telefone já cadastrados!')
-      }
+      await this.isDataInUse(userDTO, id)
 
       // SETS FIELDS TO UPDATE ACCORDING TO 'PROFILE TYPE'
       const fields = ['name', 'email', 'phone', 'password']
 
-      if (userToUpdate.profileType === COMPANY_USER) {
+      if (userToUpdate.profileType == COMPANY_USER) {
         if (!userDTO.bioDescription) {
           throw new Error('Insira uma descrição para sua empresa.')
         }
@@ -118,25 +90,65 @@ class UsersService {
 
       return { message: 'Usuário atualizado com sucesso', data: updatedUser }
     } catch (error) {
-      throw new Error(error.message)
+      throw new Error(error)
     }
   }
+
   async delete (id, actorId) {
     try {
+      await this.userExists(id)
       const actor = await this.User.findByPk(actorId)
       if (actor.id != id) {
         throw new Error('Usuário não autorizado!')
       }
-
-      const userDeleted = await this.User.destroy({
+      await this.User.destroy({
         where: { id }
       })
-      if (!userDeleted) {
-        throw new Error('Usuário não existe!')
-      }
       return { message: 'Usuário apagado com sucesso!' }
     } catch (error) {
-      throw new Error(error.message)
+      throw new Error(error)
+    }
+  }
+
+  async userExists (id) {
+    const user = await this.User.findByPk(id)
+    if (!user) {
+      throw new Error('Usuário não existe!')
+    }
+    return user
+  }
+
+  async checkPermission (actorId, permission) {
+    try {
+      const actor = await this.User.findByPk(actorId)
+      if (actor.profileType !== permission) {
+        throw new Error('Usuário não autorizado!')
+      }
+      return true
+    } catch (error) {
+      throw new Error(error)
+    }
+  }
+
+  async isDataInUse (userDTO, id) {
+    try {
+      const verifyUser = await this.User.findAll({
+        where: {
+          [Op.or]: [{ phone: userDTO.phone }, { email: userDTO.email }]
+        }
+      })
+      verifyUser.forEach(user => {
+        const equalPhone = user.phone == userDTO.phone
+        const equalEmail = user.email == userDTO.email
+        const idDif = user.id != id
+
+        if ((equalPhone && idDif) | (equalEmail && idDif)) {
+          throw new Error('Email e/ou telefone já cadastrados!')
+        }
+      })
+      return false
+    } catch (error) {
+      throw new Error(error)
     }
   }
 }
