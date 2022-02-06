@@ -60,7 +60,7 @@ test('[ADMIN] Should fetch all Users', async () => {
   const actor = defaultUsers[ADMIN_USER]
   const permission = ADMIN_USER
   const count = defaultUsers.length
-  const filter = 0
+  const filter = 1
   const order = [['name', 'ASC']]
   const attributes = [
     'id',
@@ -70,6 +70,7 @@ test('[ADMIN] Should fetch all Users', async () => {
     'profileType',
     'bioDescription'
   ]
+  const where = {profileType: filter}
 
   Users.findByPk.mockResolvedValue(actor)
   const checkPermission = await usersService.checkPermission(
@@ -84,7 +85,8 @@ test('[ADMIN] Should fetch all Users', async () => {
   expect(result.users).toEqual(mockUsers)
   expect(Users.findAndCountAll).toHaveBeenCalledWith({
     attributes,
-    order
+    order,
+    where
   })
 })
 
