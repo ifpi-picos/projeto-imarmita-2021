@@ -21,6 +21,10 @@
             border-radius: 15px;
             color: white;
         }
+        #btnSignUpLnk {
+            text-decoration: none;
+            color: black;
+        }
     </style>
 </head>
 <body>
@@ -31,12 +35,12 @@
         <form>
             Email: <input id="email" type="text" required>
             <br> <br>
-            Senha: <input id="password" type="text" required>
+            Senha: <input id="password" type="password" required>
             <br> <br>
             
 
             <button id="btnLogin">Entrar</button>
-            <button id="btnSignUp">Cadastre-se</button>
+            <button id="btnSignUp"><a id="btnSignUpLnk" href="/views/signup.html">Cadastre-se</a></button>
 
     </div>
 

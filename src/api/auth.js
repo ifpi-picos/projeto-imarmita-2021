@@ -2,28 +2,34 @@ const express = require('express')
 const router = express.Router()
 const { validationResult, body } = require('express-validator')
 const AuthService = require('../services/auth')
-const { Users } = require('../models') 
-const { COMPANY_USER, CUSTOMER_USER, ADMIN_USER } = require('../enumerators/profileTypes')
+const { Users } = require('../models')
+const {
+  COMPANY_USER,
+  CUSTOMER_USER,
+  ADMIN_USER
+} = require('../enumerators/profileTypes')
 
 const authService = new AuthService(Users)
-router.get('/signin',  async(req, res) => {
-  res.render('/login')
-  })
-  
+
+router.get('/signin', async (req, res) => {
+  res.render('views/login')
+})
+
 router.post('/signin', async (req, res) => {
-  
   try {
     const { email, password } = req.body
-    const { token, userData } = await authService.signIn(email, password)
+    const { token, userData, message } = await authService.signIn(email, password)
     res.cookie('token', token, {
       maxAge: 3600000,
       httpOnly: true,
       sameSite: 'None',
       secure: false
     })
-    res.json({ auth: true, user: userData /* token: token */ })
+    return res
+      .status(200)
+      .json({ auth: true, user: userData, message /*token: token*/ })
   } catch ({ message }) {
-    res.status(401).send({ auth: false, token: null, message: message })
+    return res.status(401).send({ auth: false, token: null, message: message })
   }
 })
 
@@ -88,12 +94,10 @@ router.post(
         password,
         profileType
       })
-      res
-        .status(201)
-        .json({
-          message: 'Usuário cadastrado com sucesso!',
-          data: user
-        })
+      res.status(201).json({
+        message: 'Usuário cadastrado com sucesso!',
+        data: user
+      })
     } catch ({ message }) {
       res.status(400).json({ error: { message } })
     }
