@@ -31,8 +31,8 @@ class UsersService {
 
       const { rows, count } = await this.User.findAndCountAll(condition)
       return { users: rows, count }
-    } catch (error) {
-      throw new Error(error)
+    } catch ({message}) {
+      throw new Error(message)
     }
   }
 
@@ -47,8 +47,8 @@ class UsersService {
         order: this.order
       })
       return { users: rows, count }
-    } catch (error) {
-      throw new Error(error)
+    } catch ({message}) {
+      throw new Error(message)
     }
   }
 
@@ -89,8 +89,8 @@ class UsersService {
       })
 
       return { message: 'Usuário atualizado com sucesso', data: updatedUser }
-    } catch (error) {
-      throw new Error(error)
+    } catch ({message}) {
+      throw new Error(message)
     }
   }
 
@@ -105,8 +105,8 @@ class UsersService {
         where: { id }
       })
       return { message: 'Usuário apagado com sucesso!' }
-    } catch (error) {
-      throw new Error(error)
+    } catch ({message}) {
+      throw new Error(message)
     }
   }
 
@@ -125,8 +125,8 @@ class UsersService {
         throw new Error('Usuário não autorizado!')
       }
       return true
-    } catch (error) {
-      throw new Error(error)
+    } catch ({message}) {
+      throw new Error(message)
     }
   }
 
@@ -147,8 +147,8 @@ class UsersService {
         }
       })
       return false
-    } catch (error) {
-      throw new Error(error)
+    } catch ({message}) {
+      throw new Error(message)
     }
   }
 }

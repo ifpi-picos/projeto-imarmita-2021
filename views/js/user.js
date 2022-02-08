@@ -1,4 +1,3 @@
-
 const LOCAL_API_URL = "http://localhost:8080/api";
 const REMOTE_API_URL = "";
 const HOST = window.location.host;
