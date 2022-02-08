@@ -6,8 +6,12 @@ const { Users } = require('../models')
 const { COMPANY_USER, CUSTOMER_USER, ADMIN_USER } = require('../enumerators/profileTypes')
 
 const authService = new AuthService(Users)
-
+router.get('/signin',  async(req, res) => {
+  res.render('/login')
+  })
+  
 router.post('/signin', async (req, res) => {
+  
   try {
     const { email, password } = req.body
     const { token, userData } = await authService.signIn(email, password)

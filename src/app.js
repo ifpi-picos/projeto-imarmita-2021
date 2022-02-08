@@ -1,6 +1,7 @@
 const express = require('express')
 const routes = require('./api')
 const auth = require('./middleware/auth')
+const cors = require('cors')
 const cookieParser = require('cookie-parser')
 
 const { API_BASE } = process.env
@@ -13,6 +14,14 @@ app.get('/', (req, res) => res.redirect(`${API_BASE}`))
 app.use(express.urlencoded({ extended: false }))
 app.use(express.json())
 app.use(cookieParser())
+app.use(
+  cors({
+    origin: process.env.CLIENT_URL,
+    credentials: true, // token in cookie
+    methods: 'GET,PUT,POST,OPTIONS, DELETE',
+    // allowedHeaders: 'Accept, Content-Type, Authorization'
+  })
+)
 
 // ROTAS
 app.all(`${process.env.API_BASE}*`, (req, res, next) => {
