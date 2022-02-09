@@ -1,4 +1,4 @@
-const LOCAL_API_URL = "http://localhost:8080/api";
+const LOCAL_API_URL = "http://localhost:3000/api";
 const REMOTE_API_URL = "";
 const HOST = window.location.host;
 // const API_URL = HOST.includes('') ? REMOTE_API_URL : LOCAL_API_URL
@@ -6,6 +6,7 @@ const API_URL = LOCAL_API_URL;
 
 const btnLogin = document.getElementById("btnLogin");
 const btnSignUp = document.getElementById("btnSignUp");
+const btnUserlist = document.getElementById("btnSUserlist")
 
 if (btnLogin) {
   btnLogin.onclick = (e) => {
