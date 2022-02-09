@@ -1,34 +1,37 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Lista de Usuário</title>
-</head>
-<body>
-    <button id="btnSignIn"><a id="btnSignInLnk" href="/views/login.html">Sair</a></button>
+  </head>
+  <body>
+    <button id="btnSignIn">
+      <a id="btnSignInLnk" href="/views/login.html">Sair</a>
+    </button>
+
+    <select name="filter" id="profileType">
+      <option value="-1" selected>Selecione a opção</option>
+      <option value="0">Todos</option>
+      <option value="1">Empresa</option>
+      <option value="2">Usuário</option>
+      <option value="3">Administrador</option>
+    </select>
 
     <div id="dGridUsers">
-        <table id="tbUsers" class="table table-striped">
-            <thead class="thead-dark">
-                <tr>
-                    <th scope="col">Id</th>
-                    <th scope="col">Nome</th>
-                    <th scope="col">Email</th>
-                    <th scope="col">Telefone</th>
-                    <th scope="col">Perfil</th>
-                    <th scope="col">Descrição</th>
-                </tr>
-                <tr>
-                    <td>João</td>
-                    <td>kk@kk</td>
-                    <td>88555S</td>
-                  </tr>
-            </thead>
-        </table>
+      <table id="tbUsers" class="table table-striped">
+        <thead class="thead-dark">
+          <th scope="col">Id</th>
+          <th scope="col">Nome</th>
+          <th scope="col">Email</th>
+          <th scope="col">Telefone</th>
+          <th scope="col">Descrição</th>
+        </thead>
+        <tbody id="bodyTblUsers"></tbody>
+      </table>
+      <p id="tblMessage"></p>
     </div>
-</body>
-
-
+    <script src="/views/js/user.js"></script>
+  </body>
 </html>

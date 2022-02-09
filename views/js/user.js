@@ -1,70 +1,45 @@
-const LOCAL_API_URL = "http://localhost:3000/api";
-const REMOTE_API_URL = "";
-const HOST = window.location.host;
-// const API_URL = HOST.includes('') ? REMOTE_API_URL : LOCAL_API_URL
-const API_URL = LOCAL_API_URL;
+const LOCAL_API_URL = 'http://localhost:8080/api'
+const API_URL = LOCAL_API_URL
 
-const btnLogin = document.getElementById("btnLogin");
-const btnSignUp = document.getElementById("btnSignUp");
-const btnUserlist = document.getElementById("btnSUserlist")
-
-if (btnLogin) {
-  btnLogin.onclick = (e) => {
-    e.preventDefault()
-    const login = getDataFromFormLogin();
-    sendDataToAPILogin(login);
-  };
+const profileType = document.getElementById('profileType')
+profileType.onchange = async () => {
+  if (profileType.value != -1) {
+    const tBodyUsers = document.getElementById('bodyTblUsers')
+    tBodyUsers.innerHTML = ''
+    await getUserListFromAPI(profileType.value)
+  }
 }
 
-function getDataFromFormLogin() {
-  const login = {};
-  login.email = document.getElementById("email").value;
-  login.password = document.getElementById("password").value;
-  return login;
-}
-
-function clearForm() {
-  document.getElementById("email").value = "";
-  document.getElementById("password").value = "";
-}
-
-function loadMsg(name) {
-  const divMessage = document.querySelector("#message");
-  const message =
-    localStorage.getItem("message") != null
-      ? JSON.parse(localStorage.getItem("message"))
-      : {};
-  const msgHTML = `<p>${message} Seja bem vindo, ${name}.</p>`;
-  divMessage.innerHTML = msgHTML;
-}
-
-async function sendDataToAPILogin(login) {
-  const response = await fetch(`${API_URL}/auth/signin`, {
-    method: "POST",
+async function getUserListFromAPI (profileType, tBodyUsers) {
+  const response = await fetch(`${API_URL}/users`, {
+    method: 'POST',
     headers: {
-      Accept: "application/json",
-      "Content-Type": "application/json",
+      Accept: 'application/json',
+      'Content-Type': 'application/json'
     },
-    credentials: "include",
-    body: JSON.stringify(login),
-  });
-  
+    credentials: 'include',
+    body: JSON.stringify({profileType}) 
+  })
 
   if (response.status === 200) {
-    clearForm();
-    const data = await response.json();
-    const { message, user } = data;
-    localStorage.setItem("message", JSON.stringify(message));
-    loadMsg(user.name);
-    const [divMsg] = document.getElementById("message");
-    // divMsg.style.backgroundColor = "green";
-    // divMsg.style.color = "red";
-    // divMsg.innerHTML = '<p>Login realizado com sucesso!</p>'
-    // window.location.href = '/index.html'
+    const tblMessage = document.getElementById('tblMessage')
+    const backData = response.json()
+    const { data, message } = backData
+
+    let users = ''
+    data.forEach(user => {
+      users += `<tr>
+            <td>${user.id}</td>
+            <td>${user.name}</td>
+            <td>${user.email}</td>
+            <td>${user.phone}</td>
+            <td>${user.bioDescription}</td>
+            </tr>`
+    })
+    tBodyUsers.append(users)
+    tblMessage.innerText(message)
   } else {
-    clearForm();
-    const {message} = await response.json();
+    const { message } = await response.json()
     alert(message)
-    document.getElementById('email').focus()
   }
 }

@@ -11,20 +11,20 @@ const {
 
 const authService = new AuthService(Users)
 
-router.get('/signin', async (req, res) => {
-  res.render('views/login')
-})
-
 router.post('/signin', async (req, res) => {
   try {
     const { email, password } = req.body
-    const { token, userData, message } = await authService.signIn(email, password)
+    const { token, userData, message } = await authService.signIn(
+      email,
+      password
+    )
     res.cookie('token', token, {
       maxAge: 3600000,
       httpOnly: true,
       sameSite: 'None',
       secure: false
     })
+
     return res
       .status(200)
       .json({ auth: true, user: userData, message /*token: token*/ })
@@ -75,7 +75,7 @@ router.post(
       const errors = validationResult(req)
 
       if (!errors.isEmpty()) {
-        return res.status(400).json({ error: errors.array()[0].msg })
+        return res.status(400).json({ message: errors.array()[0].msg })
       }
 
       const {
@@ -94,12 +94,12 @@ router.post(
         password,
         profileType
       })
-      res.status(201).json({
+      return res.status(201).json({
         message: 'Usuário cadastrado com sucesso!',
         data: user
       })
-    } catch ({ message }) {
-      res.status(400).json({ error: { message } })
+    } catch (error) {
+      return res.status(400).json({ message: error.message })
     }
   }
 )

@@ -7,24 +7,22 @@ const usersService = new UsersService(Users)
 
 const router = express.Router()
 
-router.get('/', async (req, res) => {
+router.post('/', async (req, res) => {
   try {
     const filter = req.body.profileType
     const { users, count } = await usersService.getAllUsers(req.userId, filter)
-    res.json({ message: `${count} usuários encontrados!`, data: users })
+    return res.json({ message: `${count} usuários encontrados!`,rows: count, data: users }).status(200)
   } catch ({ message }) {
-    res.status(401).json({ error: { message } })
+    return res.status(401).json({ message })
   }
 })
-
-
 
 router.get('/companies', async (req, res) => {
   try {
     const { users, count } = await usersService.getCompanies(req.userId)
-    res.json({ message: `${count} fornecedores encontrados!`, data: users })
+    return res.json({ message: `${count} fornecedores encontrados!`, data: users })
   } catch ({ message }) {
-    res.status(401).json({ error: { message } })
+    return res.status(401).json({ message })
   }
 })
 
@@ -67,9 +65,9 @@ router.put(
         bioDescription,
         password
       })
-      res.status(200).json(user)
+      return res.status(200).json(user)
     } catch ({ message }) {
-      res.status(400).json({ error: { message } })
+      return res.status(401).json({ message })
     }
   }
 )
@@ -89,9 +87,9 @@ router.delete(
       const actorId = req.userId
 
       const user = await usersService.delete(id, actorId)
-      res.status(200).json(user)
+      return res.status(200).json(user)
     } catch ({ message }) {
-      res.status(400).json({ error: { message } })
+      return res.status(401).json({ message })
     }
   }
 )

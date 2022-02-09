@@ -9,12 +9,14 @@
   </head>
   <body>
     <div class="box">
-      <form action="">
+      <form>
         <fieldset>
           <legend><b>Cadastre-se</b></legend>
           <br /><br />
-          <input type="radio" name="OPCAO" value="op1" checked /> Empresa
-          <input type="radio" name="OPCAO" value="op2" /> Consumidor
+          <select name="profileType" id="profileType">
+            <option value="1">Empresa</option>
+            <option value="2" selected>Consumidor</option>
+          </select>
           <br /><br /><br />
           <div class="inputBox">
             <input
@@ -24,7 +26,7 @@
               class="inputUser"
               required
             />
-            <label for="nome" class="labelInput">Nome completo</label>
+            <label for="name" class="labelInput">Nome completo</label>
           </div>
           <br /><br />
           <div class="inputBox">
@@ -39,29 +41,32 @@
           </div>
           <br />
           <div class="inputBox">
-            <label for="telefone">Telefone</label>
+            <label for="phone">Telefone</label>
             <input
               type="tel"
-              id="telefone"
+              id="phone"
               name="phone"
               class="input-phone"
-              pattern="[0-9]{11}"
+              pattern="[0-9]{11}|[0-9]{10}"
               required
               placeholder="somente números"
             />
           </div>
           <br />
           <div class="inputBox">
-            <label for="pass">Senha</label>
-            <input type="password" id="pass" name="password" required />
+            <label for="password">Senha</label>
+            <input type="password" id="password" name="password" required />
           </div>
           <br />
+          <div id="dDescription"></div>
           <!-- <button id="btnSignUp"><a href="views\userlist.html">Cadastrar</a></button> -->
-          <button id="btnSignIn"><a id="btnSignInLnk" href="/views/login.html">Voltar para Login</a></button>
-          <button id="btnSignIn"><a id="btnSignInLnk" href="/views\userlist.html">Cadastrar</a></button>
-
+          <button id="btnSignIn">
+            <a id="btnSignInLnk" href="/views/login.html">Voltar para Login</a>
+          </button>
+          <button id="btnSignUp">Cadastrar</button>
         </fieldset>
       </form>
     </div>
+    <script src="js/auth.js"></script>
   </body>
 </html>

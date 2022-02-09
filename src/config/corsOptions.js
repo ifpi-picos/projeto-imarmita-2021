@@ -10,7 +10,7 @@ const corsOptions = {
   },
   credentials: true, // token in cookie
   methods: 'GET,PUT,POST,OPTIONS, DELETE',
-  allowedHeaders: 'Accept, Content-Type, Authorization',
+  allowedHeaders: 'Accept,Content-Type,Authorization',
   optionsSuccessStatus: 200
 }
 
