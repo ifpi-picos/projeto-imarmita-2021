@@ -35,7 +35,11 @@ class Auth {
 
     const token = this.genToken(user)
     const { id, name } = user
-    return { token, userData: { id, name, email } }
+    return {
+      token,
+      userData: { id, name, email },
+      message: 'Login realizado com sucesso.'
+    }
   }
 
   async signUp (userDTO) {

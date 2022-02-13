@@ -1,14 +1,11 @@
 const UsersService = require('../../src/services/users')
 jest.mock('../../src/models')
 const { Users } = require('../../src/models')
-const bcrypt = require('bcrypt')
 const {
   COMPANY_USER,
   ADMIN_USER,
   CUSTOMER_USER
 } = require('../../src/enumerators/profileTypes')
-const { user } = require('pg/lib/defaults')
-
 let usersService
 
 beforeAll(() => {

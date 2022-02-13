@@ -18,21 +18,22 @@ class UsersService {
       await this.checkPermission(actorId, ADMIN_USER)
 
       const attributes = ['id', 'name', 'email', 'phone', 'profileType']
-      if ((filter === COMPANY_USER) | (filter === 0)) {
+      if ((filter == COMPANY_USER) || (filter == 0)) {
         attributes.push('bioDescription')
       }
       const condition = {
         attributes,
         order: this.order
       }
-      if (filter !== 0) {
+      if (filter != 0) {
         condition.where = { profileType: filter }
       }
+      
 
       const { rows, count } = await this.User.findAndCountAll(condition)
       return { users: rows, count }
-    } catch (error) {
-      throw new Error(error)
+    } catch ({message}) {
+      throw new Error(message)
     }
   }
 
@@ -47,8 +48,8 @@ class UsersService {
         order: this.order
       })
       return { users: rows, count }
-    } catch (error) {
-      throw new Error(error)
+    } catch ({message}) {
+      throw new Error(message)
     }
   }
 
@@ -89,8 +90,8 @@ class UsersService {
       })
 
       return { message: 'Usuário atualizado com sucesso', data: updatedUser }
-    } catch (error) {
-      throw new Error(error)
+    } catch ({message}) {
+      throw new Error(message)
     }
   }
 
@@ -105,8 +106,8 @@ class UsersService {
         where: { id }
       })
       return { message: 'Usuário apagado com sucesso!' }
-    } catch (error) {
-      throw new Error(error)
+    } catch ({message}) {
+      throw new Error(message)
     }
   }
 
@@ -125,8 +126,8 @@ class UsersService {
         throw new Error('Usuário não autorizado!')
       }
       return true
-    } catch (error) {
-      throw new Error(error)
+    } catch ({message}) {
+      throw new Error(message)
     }
   }
 
@@ -147,8 +148,8 @@ class UsersService {
         }
       })
       return false
-    } catch (error) {
-      throw new Error(error)
+    } catch ({message}) {
+      throw new Error(message)
     }
   }
 }
