@@ -10,25 +10,30 @@ body{
 }
 #tbUsers{
     position: absolute;
-    top: 10%;
-    left: 55%;
+    top: 40%;
+    left: 50%;
     transform: translate(-50%, -50%);
     background-color: rgba(0, 0, 0, 0.8);
     padding: 20px;
     border-radius: 20px;
     width: 80%;
-  
 }
+
 #profileType{
     border-radius: 20px;
     background-color: rgba(0, 0, 0, 0.8);
     color: white;
 }
-#btnSignIn{
+
+#btnSignOutLnk{
+  text-decoration:none;
+  color: whitesmoke;
+}
+
+#btnSignOut{
     border-radius: 5px;
     background-color: rgba(0, 0, 0, 0.8);
     color: white;
-    text-decoration:none;
 }
 #table, th, td{
   border: 1px solid wheat;
@@ -37,3 +42,4 @@ body{
   text-align: center;
   vertical-align: middle;
 }
+

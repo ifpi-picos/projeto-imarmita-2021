@@ -53,17 +53,30 @@
             />
           </div>
           <br />
+          <div class="inputBox" id="dDescription"></div>
+          <br />
           <div class="inputBox">
             <label for="password">Senha</label>
-            <input type="password" name="senha1"  id="password" name="password" required />
-            <br> <br>
+            <input
+              type="password"
+              name="senha1"
+              id="password"
+              name="password"
+              required
+            />
+            <br />
+            <br />
             <label for="password">Confirmar Senha</label>
-            <input type="password" name="senha2" id="password" name="password" required />
-            <br> <br>
-            <input type="button" id="validate" value="Validar" onClick="validarSenha()">
+            <input
+              type="password"
+              name="senha2"
+              id="confirm-password"
+              name="password"
+              required
+            />
           </div>
           <br />
-          <div id="dDescription"></div>
+          <br />
           <!-- <button id="btnSignUp"><a href="views\userlist.html">Cadastrar</a></button> -->
           <button id="btnSignIn">
             <a id="btnSignInLnk" href="/views/login.html">Voltar para Login</a>
@@ -73,6 +86,5 @@
       </form>
     </div>
     <script src="js/auth.js"></script>
-    
   </body>
 </html>

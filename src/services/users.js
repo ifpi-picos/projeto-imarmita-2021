@@ -18,16 +18,17 @@ class UsersService {
       await this.checkPermission(actorId, ADMIN_USER)
 
       const attributes = ['id', 'name', 'email', 'phone', 'profileType']
-      if ((filter === COMPANY_USER) | (filter === 0)) {
+      if ((filter == COMPANY_USER) || (filter == 0)) {
         attributes.push('bioDescription')
       }
       const condition = {
         attributes,
         order: this.order
       }
-      if (filter !== 0) {
+      if (filter != 0) {
         condition.where = { profileType: filter }
       }
+      
 
       const { rows, count } = await this.User.findAndCountAll(condition)
       return { users: rows, count }

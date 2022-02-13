@@ -44,7 +44,15 @@ if (btnSignUp) {
   btnSignUp.onclick = async e => {
     e.preventDefault()
     const user = getDataFromFormSignup()
-    await sendDataToAPISignup(user)
+
+    secPassword = document.getElementById('confirm-password').value
+
+    if (user.password === secPassword) {
+      await sendDataToAPISignup(user)
+    } else {
+      window.alert('As senhas não correspondem.')
+      window.location.reload(true)
+    }
   }
 }
 
@@ -60,8 +68,8 @@ function getDataFromFormSignup () {
   user.name = document.getElementById('name').value
   user.email = document.getElementById('email').value
   user.phone = document.getElementById('phone').value
-  user.password = document.getElementById('password').value
   user.profileType = document.getElementById('profileType').value
+  user.password = document.getElementById('password').value
 
   const descriptionExists = document.getElementById('bioDescription')
   if (descriptionExists) {
@@ -85,13 +93,11 @@ async function sendDataToAPILogin (login) {
     credentials: 'include',
     body: JSON.stringify(login)
   })
-
   if (response.status === 200) {
     const data = await response.json()
     const { message } = data //{message, user}
     localStorage.setItem('message', JSON.stringify(message))
     window.location.assign('http://localhost:5500/views/userList.html')
-
   } else {
     clearForm()
     const { message } = await response.json()
@@ -110,11 +116,12 @@ async function sendDataToAPISignup (user) {
     credentials: 'include',
     body: JSON.stringify(user)
   })
- 
+
   if (response.status === 201) {
     clearForm()
     const backData = response.json()
     const { message } = backData
+    
     localStorage.setItem('message', JSON.stringify(message))
     window.alert('Efetue o login para começar.')
     window.location.assign('http://localhost:5500/views/login.html')
