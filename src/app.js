@@ -7,7 +7,7 @@ const corsOptions = require('./config/corsOptions')
 
 const { API_BASE } = process.env
 
-const app = express()
+const app = express(API_BASE)
 
 app.get('/', (req, res) => res.redirect(`${API_BASE}`))
 

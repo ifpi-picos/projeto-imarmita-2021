@@ -1,8 +1,7 @@
 const LOCAL_API_URL = 'http://localhost:8080/api'
 const REMOTE_API_URL = ''
 const HOST = window.location.host
-// const API_URL = HOST.includes('') ? REMOTE_API_URL : LOCAL_API_URL
-const API_URL = LOCAL_API_URL
+const API_URL = HOST.includes('netlify.app') ? REMOTE_API_URL : LOCAL_API_URL
 
 const btnLogin = document.getElementById('btnLogin')
 const btnSignUp = document.getElementById('btnSignUp')
@@ -79,8 +78,11 @@ function getDataFromFormSignup () {
 }
 
 function clearForm () {
-  document.getElementById('email').value = ''
   document.getElementById('password').value = ''
+  const confPassword = document.getElementById('confirm-password')
+  if (confPassword) {
+    confPassword.value = ''
+  }
 }
 
 async function sendDataToAPILogin (login) {
@@ -95,13 +97,13 @@ async function sendDataToAPILogin (login) {
   })
   if (response.status === 200) {
     const data = await response.json()
-    const { message } = data //{message, user}
-    localStorage.setItem('message', JSON.stringify(message))
-    window.location.assign('http://localhost:5500/views/userList.html')
+    const { user } = data //{message, user}
+    localStorage.setItem('username', JSON.stringify(user.name))
+    window.location.href = '/views/userList.html'
   } else {
-    clearForm()
-    const { message } = await response.json()
+    const {message} = await response.json()
     alert(message)
+    clearForm()
     document.getElementById('email').focus()
   }
 }
@@ -117,14 +119,9 @@ async function sendDataToAPISignup (user) {
     body: JSON.stringify(user)
   })
 
-  if (response.status === 201) {
-    clearForm()
-    const backData = response.json()
-    const { message } = backData
-    
-    localStorage.setItem('message', JSON.stringify(message))
+  if (response.status === 201) {    
     window.alert('Efetue o login para começar.')
-    window.location.assign('http://localhost:5500/views/login.html')
+    window.location.href = '/views/login.html'
   } else {
     clearForm()
     const { message } = await response.json()
