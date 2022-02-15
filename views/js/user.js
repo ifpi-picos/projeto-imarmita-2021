@@ -1,5 +1,7 @@
 const LOCAL_API_URL = 'http://localhost:8080/api'
-const API_URL = LOCAL_API_URL
+const REMOTE_API_URL = ''
+const HOST = window.location.host
+const API_URL = HOST.includes('netlify.app') ? REMOTE_API_URL : LOCAL_API_URL
 
 const profileType = document.getElementById('profileType')
 profileType.onchange = async () => {
@@ -42,23 +44,6 @@ async function getUserListFromAPI (profileType, tBodyUsers) {
       tBodyUsers.appendChild(userInfo)
     })
     tblMessage.innerText = message
-    // window.alert(message)
-
-    // console.log(data)
-
-    // let users = ''
-    // data.forEach(user => {
-    //   users += `<tr>
-    //         <td>${user.id}</td>
-    //         <td>${user.name}</td>
-    //         <td>${user.email}</td>
-    //         <td>${user.phone}</td>
-    //         <td>${user.bioDescription}</td>
-    //         </tr>`
-    //   console.log(users)
-    // })
-    // tBodyUsers.appendChild(users)
-    // tblMessage.innerText(message)
   } else {
     const { message } = await response.json()
     alert(message)
