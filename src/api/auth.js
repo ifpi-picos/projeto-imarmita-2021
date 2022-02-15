@@ -3,16 +3,33 @@ const router = express.Router()
 const { validationResult, body } = require('express-validator')
 const AuthService = require('../services/auth')
 const { Users } = require('../models')
+const {
+  COMPANY_USER,
+  CUSTOMER_USER,
+  ADMIN_USER
+} = require('../enumerators/profileTypes')
 
 const authService = new AuthService(Users)
 
 router.post('/signin', async (req, res) => {
   try {
     const { email, password } = req.body
-    const { token, userData } = await authService.signIn(email, password)
-    res.json({ auth: true, user: userData, token: token })
+    const { token, userData, message } = await authService.signIn(
+      email,
+      password
+    )
+    res.cookie('token', token, {
+      maxAge: 3600000,
+      httpOnly: false,
+      sameSite: 'strict',
+      secure: false
+    })
+
+    return res
+      .status(200)
+      .json({ auth: true, user: userData, message /*token: token*/ })
   } catch ({ message }) {
-    res.status(401).send({ auth: false, token: null, message: message })
+    return res.status(401).send({ auth: false, token: null, message: message })
   }
 })
 
@@ -33,16 +50,16 @@ router.post(
     .isMobilePhone('pt-BR'),
   body('profileType', 'profileType inválido!')
     .isInt()
-    .isIn([1, 2]),
+    .isIn([COMPANY_USER, CUSTOMER_USER, ADMIN_USER]),
   body(
     'bioDescription',
     'Adicione a descrição para a empresa, incluindo horário de funcionamento'
   )
     .if(
       body('profileType').custom((value, { req }) => {
-        if (req.body.profileType == 1) {
+        if (req.body.profileType == COMPANY_USER) {
           return true
-        } else{
+        } else {
           req.body.bioDescription = null
         }
       })
@@ -58,7 +75,7 @@ router.post(
       const errors = validationResult(req)
 
       if (!errors.isEmpty()) {
-        return res.status(400).json({ error: errors.array()[0].msg })
+        return res.status(400).json({ message: errors.array()[0].msg })
       }
 
       const {
@@ -77,11 +94,12 @@ router.post(
         password,
         profileType
       })
-      res
-        .status(201)
-        .json({ message: 'Usuário cadastrado com sucesso', data: user })
-    } catch ({ message }) {
-      res.status(400).json(message)
+      return res.status(201).json({
+        message: 'Usuário cadastrado com sucesso!',
+        data: user
+      })
+    } catch (error) {
+      return res.status(400).json({ message: error.message })
     }
   }
 )

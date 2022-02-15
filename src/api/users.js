@@ -7,25 +7,22 @@ const usersService = new UsersService(Users)
 
 const router = express.Router()
 
-router.get('/new', (req, res) => {
-  res.send('ROUTE FOR NEW USER FORM')
-})
-
-router.get('/customers', async (req, res) => {
+router.post('/', async (req, res) => {
   try {
-    const { users, count } = await usersService.getCustomers()
-    res.json({ message: `${count} clientes encontrados!`, data: users })
+    const filter = req.body.profileType
+    const { users, count } = await usersService.getAllUsers(req.userId, filter)
+    return res.json({ message: `${count} usuários encontrados!`,rows: count, data: users }).status(200)
   } catch ({ message }) {
-    res.status(400).json({ error: { message } })
+    return res.status(401).json({ message })
   }
 })
 
 router.get('/companies', async (req, res) => {
   try {
-    const { users, count } = await usersService.getCompanies()
-    res.json({ message: `${count} fornecedores encontrados!`, data: users })
+    const { users, count } = await usersService.getCompanies(req.userId)
+    return res.json({ message: `${count} fornecedores encontrados!`, data: users })
   } catch ({ message }) {
-    res.status(400).json({ error: { message } })
+    return res.status(401).json({ message })
   }
 })
 
@@ -59,18 +56,18 @@ router.put(
       }
 
       const { id } = req.params
+      const actorId = req.userId
       const { name, email, phone, bioDescription, password } = req.body
-
-      const user = await usersService.update(id, {
+      const user = await usersService.update(id, actorId, {
         name,
         email,
         phone,
         bioDescription,
         password
       })
-      res.status(200).json(user)
+      return res.status(200).json(user)
     } catch ({ message }) {
-      res.status(400).json({ error: { message } })
+      return res.status(401).json({ message })
     }
   }
 )
@@ -87,11 +84,12 @@ router.delete(
         return res.status(400).json({ error: errors.array()[0].msg })
       }
       const { id } = req.params
+      const actorId = req.userId
 
-      const user = await usersService.delete(id)
-      res.status(200).json(user)
+      const user = await usersService.delete(id, actorId)
+      return res.status(200).json(user)
     } catch ({ message }) {
-      res.status(400).json({ error: { message } })
+      return res.status(401).json({ message })
     }
   }
 )

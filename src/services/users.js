@@ -1,68 +1,79 @@
 const { Op } = require('sequelize')
 const bcrypt = require('bcrypt')
+const {
+  ADMIN_USER,
+  COMPANY_USER,
+  CUSTOMER_USER
+} = require('../enumerators/profileTypes')
 
 const SALT = 10
 class UsersService {
   constructor (User) {
     this.User = User
+    this.order = [['name', 'ASC']]
   }
 
-  async getCustomers () {
+  async getAllUsers (actorId, filter) {
     try {
-      const { rows, count } = await this.User.findAndCountAll({
-        where: {
-          profileType: 2
-        },
-        attributes: ['id', 'name', 'email', 'phone']
-      })
-      return { users: rows, count }
-    } catch (error) {
-      throw new Error(error)
-    }
-  }
+      await this.checkPermission(actorId, ADMIN_USER)
 
-  async getCompanies () {
-    try {
-      const { rows, count } = await this.User.findAndCountAll({
-        where: {
-          profileType: 1
-        },
-        attributes: ['id', 'name', 'email', 'phone', 'bioDescription']
-      })
-      return { users: rows, count }
-    } catch (error) {
-      throw new Error(error)
-    }
-  }
-
-  async update (id, userDTO) {
-    try {
-      // CHECKS IF USER EXISTS
-      const user = await this.User.findByPk(id)
-      if (!user) {
-        throw new Error('Usuário não existe! Informe um ID de usuário válido')
+      const attributes = ['id', 'name', 'email', 'phone', 'profileType']
+      if ((filter == COMPANY_USER) || (filter == 0)) {
+        attributes.push('bioDescription')
       }
+      const condition = {
+        attributes,
+        order: this.order
+      }
+      if (filter != 0) {
+        condition.where = { profileType: filter }
+      }
+      
 
-      // SETS FIELDS TO UPDATE ACCORDING TO 'PROFILE TYPE' & AVOIDS EMPTY DESCRIPTION FOR COMPANY USERS
-      const fields = ['name', 'email', 'phone', 'password']
+      const { rows, count } = await this.User.findAndCountAll(condition)
+      return { users: rows, count }
+    } catch ({message}) {
+      throw new Error(message)
+    }
+  }
 
-      if (user.profileType === 1) {
-        fields.push('bioDescription')
+  async getCompanies (actorId) {
+    try {
+      await this.checkPermission(actorId, CUSTOMER_USER)
+      const { rows, count } = await this.User.findAndCountAll({
+        where: {
+          profileType: COMPANY_USER
+        },
+        attributes: ['id', 'name', 'email', 'phone', 'bioDescription'],
+        order: this.order
+      })
+      return { users: rows, count }
+    } catch ({message}) {
+      throw new Error(message)
+    }
+  }
 
-        if (!userDTO.bioDescription) {
-          throw new Error('Insira uma descrição para sua empresa.')
-        }
+  async update (id, actorId, userDTO) {
+    try {
+      const userToUpdate = await this.userExists(id)
+
+      // CHECK PERMISSIONS
+      const actor = await this.User.findByPk(actorId)
+      if (actor.id != id) {
+        throw new Error('Usuário não autorizado!')
       }
 
       // VERIFY IF UNIQUE DATA IS REPEATED
-      const verifyUser = await this.User.findAll({
-        where: {
-          [Op.or]: [{ phone: userDTO.phone }, { email: userDTO.email }]
-        }
-      })
+      await this.isDataInUse(userDTO, id)
 
-      if (verifyUser[0] && verifyUser[0].id != id) {
-        throw new Error('Email e/ou telefone já cadastrados!')
+      // SETS FIELDS TO UPDATE ACCORDING TO 'PROFILE TYPE'
+      const fields = ['name', 'email', 'phone', 'password']
+
+      if (userToUpdate.profileType == COMPANY_USER) {
+        if (!userDTO.bioDescription) {
+          throw new Error('Insira uma descrição para sua empresa.')
+        }
+        fields.push('bioDescription')
       }
 
       // HASHES PASSWORD
@@ -79,21 +90,66 @@ class UsersService {
       })
 
       return { message: 'Usuário atualizado com sucesso', data: updatedUser }
-    } catch (error) {
-      throw new Error(error.message)
+    } catch ({message}) {
+      throw new Error(message)
     }
   }
-  async delete (id) {
+
+  async delete (id, actorId) {
     try {
-      const userDeleted = await this.User.destroy({
+      await this.userExists(id)
+      const actor = await this.User.findByPk(actorId)
+      if (actor.id != id) {
+        throw new Error('Usuário não autorizado!')
+      }
+      await this.User.destroy({
         where: { id }
       })
-      if (!userDeleted) {
-        throw new Error('Usuário não existe!')
-      }
       return { message: 'Usuário apagado com sucesso!' }
-    } catch (error) {
-      throw new Error(error.message)
+    } catch ({message}) {
+      throw new Error(message)
+    }
+  }
+
+  async userExists (id) {
+    const user = await this.User.findByPk(id)
+    if (!user) {
+      throw new Error('Usuário não existe!')
+    }
+    return user
+  }
+
+  async checkPermission (actorId, permission) {
+    try {
+      const actor = await this.User.findByPk(actorId)
+      if (actor.profileType !== permission) {
+        throw new Error('Usuário não autorizado!')
+      }
+      return true
+    } catch ({message}) {
+      throw new Error(message)
+    }
+  }
+
+  async isDataInUse (userDTO, id) {
+    try {
+      const verifyUser = await this.User.findAll({
+        where: {
+          [Op.or]: [{ phone: userDTO.phone }, { email: userDTO.email }]
+        }
+      })
+      verifyUser.forEach(user => {
+        const equalPhone = user.phone == userDTO.phone
+        const equalEmail = user.email == userDTO.email
+        const idDif = user.id != id
+
+        if ((equalPhone && idDif) | (equalEmail && idDif)) {
+          throw new Error('Email e/ou telefone já cadastrados!')
+        }
+      })
+      return false
+    } catch ({message}) {
+      throw new Error(message)
     }
   }
 }
