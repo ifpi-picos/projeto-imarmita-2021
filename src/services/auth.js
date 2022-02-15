@@ -1,6 +1,7 @@
 const jwt = require('jsonwebtoken')
 const bcrypt = require('bcrypt')
 const { Op } = require('sequelize')
+const config = require('../config')
 
 const SALT = 10
 
@@ -10,7 +11,7 @@ class Auth {
   }
 
   genToken (user) {
-    const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, {
+    const token = jwt.sign({ id: user.id }, config.JWT_SECRET, {
       expiresIn: '1h'
     })
     return token
