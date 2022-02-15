@@ -1,12 +1,11 @@
 const app = require('./src/app')
+const config = require('./src/config')
 
 const { sequelize } = require('./src/models')
-const { PORT, API_BASE } = process.env
 
 // Starting Server
-
 sequelize.sync().then(() => {
-  app.listen(PORT, () => {
-    console.log(`Application is online at http://localhost:${PORT}${API_BASE}`)
+  app.listen(config.PORT, () => {
+    console.log(`Application is online at http://localhost:${config.PORT}${config.API_BASE}`)
   })
 })

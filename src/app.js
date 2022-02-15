@@ -1,28 +1,29 @@
 const express = require('express')
+require('dotenv').config()
 const routes = require('./api')
 const auth = require('./middleware/auth')
 const cors = require('cors')
 const cookieParser = require('cookie-parser')
 const corsOptions = require('./config/corsOptions')
+const config = require('./config')
 
-const { API_BASE } = process.env
 
-const app = express(API_BASE)
+const app = express(config.API_BASE)
 
 app.get('/', (req, res) => res.redirect(`${API_BASE}`))
 
-// Parsers
+// Uses
 app.use(express.urlencoded({ extended: false }))
 app.use(express.json())
 app.use(cookieParser())
 app.use(cors(corsOptions))
 
 // ROTAS
-app.all(`${process.env.API_BASE}*`, (req, res, next) => {
+app.all(`${config.API_BASE}*`, (req, res, next) => {
   const publicRoutes = [
-    `${process.env.API_BASE}`,
-    `${process.env.API_BASE}/auth/signup`,
-    `${process.env.API_BASE}/auth/signin`
+    `${config.API_BASE}`,
+    `${config.API_BASE}/auth/signup`,
+    `${config.API_BASE}/auth/signin`
   ]
 
   for (let i = 0; i < publicRoutes.length; i++) {
@@ -38,6 +39,6 @@ app.get('/', (req, res) => {
   res.status(200).send('<h1 style="text-align: center">App Online!</h1>')
 })
 
-app.use(process.env.API_BASE, routes)
+app.use(config.API_BASE, routes)
 
 module.exports = app
