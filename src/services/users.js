@@ -119,6 +119,13 @@ class UsersService {
     return user
   }
 
+  async returnUser(id) {
+    const user = await this.User.findByPk(id, {
+      attributes: ['id', 'name', 'email', 'phone', 'bioDescription', 'profileType']
+    })
+    return user
+  }
+
   async checkPermission (actorId, permission) {
     try {
       const actor = await this.User.findByPk(actorId)
