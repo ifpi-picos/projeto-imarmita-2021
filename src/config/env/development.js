@@ -9,6 +9,9 @@ class Config {
       this.DATABASE_USER = process.env.DATABASE_USER
       this.DATABASE_PASSWORD = process.env.DATABASE_PASSWORD
       this.JWT_SECRET = process.env.JWT_SECRET
+
+      this.SAME_SITE = 'strict'
+      this.SECURE = false
     }
   }
   
