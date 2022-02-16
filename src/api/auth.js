@@ -11,6 +11,7 @@ const {
 } = require('../enumerators/profileTypes')
 
 const authService = new AuthService(Users)
+console.log(config.SAME_SITE, config.SECURE, config.env)
 
 router.post('/signin', async (req, res) => {
   try {

@@ -11,7 +11,22 @@ router.post('/', async (req, res) => {
   try {
     const filter = req.body.profileType
     const { users, count } = await usersService.getAllUsers(req.userId, filter)
-    return res.json({ message: `${count} usuários encontrados!`,rows: count, data: users }).status(200)
+    return res
+      .json({
+        message: `${count} usuários encontrados!`,
+        rows: count,
+        data: users
+      })
+      .status(200)
+  } catch ({ message }) {
+    return res.status(401).json({ message })
+  }
+})
+
+router.get('/me', async (req, res) => {
+  try {
+    const user = await usersService.returnUser(req.userId)
+    return res.status(200).json({ user })
   } catch ({ message }) {
     return res.status(401).json({ message })
   }
@@ -20,7 +35,10 @@ router.post('/', async (req, res) => {
 router.get('/companies', async (req, res) => {
   try {
     const { users, count } = await usersService.getCompanies(req.userId)
-    return res.json({ message: `${count} fornecedores encontrados!`, data: users })
+    return res.status(200).json({
+      message: `${count} fornecedores encontrados!`,
+      data: users
+    })
   } catch ({ message }) {
     return res.status(401).json({ message })
   }
