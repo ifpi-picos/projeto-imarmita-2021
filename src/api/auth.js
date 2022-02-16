@@ -1,5 +1,6 @@
 const express = require('express')
 const router = express.Router()
+const config = require('../config')
 const { validationResult, body } = require('express-validator')
 const AuthService = require('../services/auth')
 const { Users } = require('../models')
@@ -21,8 +22,8 @@ router.post('/signin', async (req, res) => {
     res.cookie('token', token, {
       maxAge: 3600000,
       httpOnly: false,
-      sameSite: 'none',
-      secure: false
+      sameSite: config.SAME_SITE,
+      secure: config.SECURE
     })
 
     return res
